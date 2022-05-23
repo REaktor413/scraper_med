@@ -4,25 +4,18 @@ import lxml
 import json
 
 
-headers = {'Mozilla/5.0' : '(Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.82 Safari/537.36'}
+headers = {'Mozilla/5.0': '(Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.82 Safari/537.36'}
 
-result_list = []
-for page in range(1,26):
+
+# get all pages and collect data
+for page in range(1, 26):
     print(f"Processing page # {page}")
     url = f"https://www.mortgageandfinancehelp.com.au/find-accredited-broker/?page={page}&query=&location=2000"
 
     req = requests.get(url=url, headers=headers)
-
-    
-    with open(f'data/index{page}.html', 'w') as file:
-        file.write(req.text)
-
- 
-    with open(f'data/index{page}.html') as file:
-        src = file.read()
-
+    src = req.text
     soup = BeautifulSoup(src, 'lxml')
-    cards = soup.find_all('a' , class_='viewdetails_button standard')
+    cards = soup.find_all('a', class_='viewdetails_button standard')
 
     for item in cards:
         collect_data = {}
@@ -36,7 +29,7 @@ for page in range(1,26):
         collect_data['State'] = item.get('data-state')
         collect_data['Company'] = item.get('data-company')
         result_list.append(collect_data)
-
+# save results in json
 with open("result.json", "a", encoding="utf-8") as file:
     json.dump(result_list, file, indent=4, ensure_ascii=False)
 
